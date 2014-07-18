@@ -299,7 +299,7 @@ int main(void)
 
 	fresult = f_mount(&g_sFatFs, "0:0", 1);
 
-	//fresult =  f_chdir("/wav");
+
 
 	//fresult = f_open(&plik,"z.wav", FA_READ);
 	fresult = f_open(&plik, "bj8.wav", FA_READ);
