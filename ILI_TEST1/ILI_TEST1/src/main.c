@@ -165,7 +165,8 @@ const uint16_t Sine12bit[32] = {
                       2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
                       3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
                       599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
-extern uint8_t buffer[2][512];
+//extern uint8_t buffer[2][512];
+extern int16_t buffer[2][512];
 extern FIL     plik;
 extern UINT bytesToRead,bytesRead;
 bool canRead;
@@ -263,8 +264,8 @@ int main(void)
 	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
 
 	DMA_DeInit(DMA1_Channel2);
-	//DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR12R1_Address;
-	DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R1_Address;
+	DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR12R1_Address;
+	//DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R1_Address;
 	//DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Sine12bit;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) &buffer[0][0];
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
@@ -272,10 +273,10 @@ int main(void)
 	DMA_InitStructure.DMA_BufferSize = 512;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	//DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	//DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	//DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	//DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;
 	//  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
 	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
@@ -302,15 +303,21 @@ int main(void)
 
 
 	//fresult = f_open(&plik,"z.wav", FA_READ);
-	fresult = f_open(&plik, "bj8.wav", FA_READ);
+	//fresult = f_open(&plik, "im16.wav", FA_READ);
+	fresult = f_open(&plik, "bj16.wav", FA_READ);
 
 	bytesToRead = f_size(&plik);
 
 	//fresult = f_lseek(&plik, 44 + 22050);
 	fresult = f_lseek(&plik, 0);
 
-	fresult = f_read(&plik, &buffer[0][0], 512 , &bytesRead);
-	fresult = f_read(&plik, &buffer[1][0], 512 , &bytesRead);
+	//fresult = f_read(&plik, &buffer[0][0], 512 , &bytesRead);
+	fresult = f_read(&plik, &buffer[0][0], 512*2 , &bytesRead);
+	convertBufferTo12bit(&buffer[0][0]);
+
+	//fresult = f_read(&plik, &buffer[1][0], 512 , &bytesRead);
+	fresult = f_read(&plik, &buffer[1][0], 512 *2 , &bytesRead);
+	convertBufferTo12bit(&buffer[1][0]);
 
 	NVIC_Init(&nvicStructure);
 
@@ -325,7 +332,8 @@ int main(void)
 
 	while (1) {
 		if (canRead == true) {
-			f_read(&plik, &buffer[i ^ 0x01][0], 512 , &bytesRead);
+			f_read(&plik, &buffer[i ^ 0x01][0], 512 *2 , &bytesRead);
+			convertBufferTo12bit(&buffer[i ^ 0x01][0]);
 
 			//tmp = ((*pTmp) + 32768)>>4;
 
@@ -338,12 +346,15 @@ int main(void)
 			 */
 
 			canRead = false;
-			if (bytesRead < 512)
+			if (bytesRead < 512*2)
 				break;
 		}
 
 	}
 
+	DAC_Cmd(DAC_Channel_1, DISABLE);
+	DMA_Cmd(DMA1_Channel2, DISABLE);
+	DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, DISABLE);
 	fresult = f_close(&plik);
 
 

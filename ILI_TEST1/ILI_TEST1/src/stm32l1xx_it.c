@@ -45,7 +45,8 @@ UINT bytesToRead,bytesRead;
 
 extern bool canRead;
 
-uint8_t buffer[2][512];
+//uint8_t buffer[2][512];
+int16_t buffer[2][512];
 
 /** @addtogroup STM32L100C-Discovery_Demo
   * @{
@@ -224,10 +225,10 @@ void DMA1_Channel2_IRQHandler(void){
 		    DMA1_Channel2->CNDTR = 0x200;
 
 		    /* 12 bit */
-		    //DMA1_Channel2->CPAR = 0x40007408;
+		    DMA1_Channel2->CPAR = 0x40007408;
 
 		    /* 8- bit */
-		    DMA1_Channel2->CPAR = 0x40007410;
+		    //DMA1_Channel2->CPAR = 0x40007410;
 
 		    //i = (i + 1)%2;
 
@@ -236,9 +237,10 @@ void DMA1_Channel2_IRQHandler(void){
 		    //i ^= 0x01;
 
 		    /* 12 bit */
-		    //DMA1_Channel2->CCR = 0x2593;
+		    DMA1_Channel2->CCR = 0x2593;
 
-		    DMA1_Channel2->CCR = 0x2093;
+		    /* 8-bit */
+		    //DMA1_Channel2->CCR = 0x2093;
 		/**********************************/
 
 		    DMA1->IFCR = DMA1_IT_TC2;
