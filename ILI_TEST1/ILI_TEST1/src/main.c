@@ -306,7 +306,6 @@ int main(void)
 
 	bytesToRead = f_size(&plik);
 
-	//bytesToRead = sizeof(abuffer);
 	//fresult = f_lseek(&plik, 44 + 22050);
 	fresult = f_lseek(&plik, 0);
 
