@@ -10,7 +10,11 @@
 
 #include "main.h"
 
+
+void DAC_PreConfig(void);
+
 void convertBufferTo12bit(int16_t * buffer);
 
+void playWav(uint8_t * name);
 
 #endif /* WAVEPLAYER_H_ */

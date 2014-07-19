@@ -31,10 +31,23 @@
 
 #define USE_PETIT_FAT 0
 
+/* Private define ------------------------------------------------------------*/
+#define DAC_DHR12R2_Address      0x40007414
+
+/* 8-bit */
+#define DAC_DHR8R1_Address       0x40007410
+
+/* channel1 12-bit left aligned data holding register */
+#define DAC_DHR12L1_Address       0x4000740C
+
+/* DAC channel1 12-bit right-aligned data holding register */
+#define DAC_DHR12R1_Address       0x40007408
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l1xx.h"
 #include "stm32l100c_discovery.h"
 #include "../FatFs_0.10/src/ff.h"
+#include "stdbool.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -47,3 +60,4 @@ void Delay(__IO uint32_t nTime);
 #endif /* __MAIN_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+static FATFS g_sFatFs; //obiekt FATFs

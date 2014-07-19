@@ -35,6 +35,7 @@
 #include "stm32l1xx_tim.h"
 #include "clock.h"
 
+
 volatile bool toggleFlag = false;
 extern bool updated;
 extern uint8_t mode; //0 - normal, 1 - hours, 2 - minutes, 3 seconds
@@ -46,7 +47,7 @@ UINT bytesToRead,bytesRead;
 extern bool canRead;
 
 //uint8_t buffer[2][512];
-int16_t buffer[2][512];
+extern int16_t buffer[2][512];
 
 /** @addtogroup STM32L100C-Discovery_Demo
   * @{
