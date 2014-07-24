@@ -390,9 +390,11 @@ void Lcd_WriteData(u8 Data)
    LCD_RS_SET;
    LCD_CS_CLR;
 
-   for ( i = 0; i < 5; i++) { /* Wait a bit. */
+   /*
+   for ( i = 0; i < 5; i++) {
    			__asm__("NOP");
    		}
+*/
 
    //SPIv_WriteByte(Data);
    SPI_WriteByte(SPI2,Data);

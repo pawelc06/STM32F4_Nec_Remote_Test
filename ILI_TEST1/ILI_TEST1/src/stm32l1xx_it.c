@@ -36,6 +36,7 @@
 #include "clock.h"
 
 
+
 volatile bool toggleFlag = false;
 extern bool updated;
 extern uint8_t mode; //0 - normal, 1 - hours, 2 - minutes, 3 seconds
@@ -47,7 +48,11 @@ UINT bytesToRead,bytesRead;
 extern bool canRead;
 
 //uint8_t buffer[2][512];
+#ifdef SAMPLE_WIDTH_16
 extern int16_t buffer[2][512];
+#else
+extern uint8_t buffer[2][512];
+#endif
 
 /** @addtogroup STM32L100C-Discovery_Demo
   * @{
@@ -225,23 +230,33 @@ void DMA1_Channel2_IRQHandler(void){
 		DMA1_Channel2->CCR = 0x0;
 		    DMA1_Channel2->CNDTR = 0x200;
 
+#ifdef SAMPLE_WIDTH_16
 		    /* 12 bit */
-		    DMA1_Channel2->CPAR = 0x40007408;
+		    DMA1_Channel2->CPAR = DAC_DHR12R1_Address;
+#else
 
 		    /* 8- bit */
-		    //DMA1_Channel2->CPAR = 0x40007410;
+		    DMA1_Channel2->CPAR = DAC_DHR8R1_Address;
+#endif
 
 		    //i = (i + 1)%2;
 
 		    i ^= 0x01;
+#ifdef SAMPLE_WIDTH_16
 		    DMA1_Channel2->CMAR = (uint32_t)&buffer[i][0];
+#else
+		    DMA1_Channel2->CMAR = (uint32_t)&buffer[i][0];
+#endif
 		    //i ^= 0x01;
 
+#ifdef SAMPLE_WIDTH_16
 		    /* 12 bit */
 		    DMA1_Channel2->CCR = 0x2593;
+#else
 
 		    /* 8-bit */
-		    //DMA1_Channel2->CCR = 0x2093;
+		    DMA1_Channel2->CCR = 0x2093;
+#endif
 		/**********************************/
 
 		    DMA1->IFCR = DMA1_IT_TC2;

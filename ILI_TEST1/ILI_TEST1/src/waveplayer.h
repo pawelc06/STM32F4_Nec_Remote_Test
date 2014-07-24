@@ -10,6 +10,9 @@
 
 #include "main.h"
 
+#define SAMPLING_FREQ 11025
+//#define DMA_TIMER_VAL 1451 //for 22050
+#define DMA_TIMER_VAL (1000.0/SAMPLING_FREQ)/31.25E-06 //for 22050
 
 void DAC_PreConfig(void);
 
