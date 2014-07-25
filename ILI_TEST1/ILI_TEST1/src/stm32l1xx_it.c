@@ -42,6 +42,8 @@ extern bool updated;
 extern uint8_t mode; //0 - normal, 1 - hours, 2 - minutes, 3 seconds
 volatile uint16_t sample;
 volatile uint8_t i;
+volatile uint8_t * wavPtr;
+volatile uint8_t * wavPtrBegin;
 FIL     plik;
 UINT bytesToRead,bytesRead;
 
@@ -241,12 +243,21 @@ void DMA1_Channel2_IRQHandler(void){
 
 		    //i = (i + 1)%2;
 
-		    i ^= 0x01;
-#ifdef SAMPLE_WIDTH_16
-		    DMA1_Channel2->CMAR = (uint32_t)&buffer[i][0];
+
+
+#ifdef WAV_FROM_INT_MEMORY
+		DMA1_Channel2->CMAR = (uint32_t) wavPtr;
+		wavPtr += SAMPLE_BUFFER_SIZE;
+		if (wavPtr >= wavPtrBegin + 67392) {
+			DAC_Cmd(DAC_Channel_1, DISABLE);
+			DMA_Cmd(DMA1_Channel2, DISABLE);
+			DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, DISABLE);
+		}
 #else
-		    DMA1_Channel2->CMAR = (uint32_t)&buffer[i][0];
+		i ^= 0x01;
+		DMA1_Channel2->CMAR = (uint32_t)&buffer[i][0];
 #endif
+
 		    //i ^= 0x01;
 
 #ifdef SAMPLE_WIDTH_16
@@ -263,15 +274,7 @@ void DMA1_Channel2_IRQHandler(void){
 
 		    canRead = true;
 
-			  	                                         /* Enable DMA for DAC Channel1 */
 
-
-		//DMA1_Channel2->CMAR = (uint32_t)&buffer[0][1];
-
-		//DAC_Cmd(DAC_Channel_1, ENABLE);
-		//DAC_DMACmd(DAC_Channel_1, ENABLE);
-		//DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&buffer[0][i%2];
-		//DMA_Init(DMA1_Channel2, &DMA_InitStructure);
 
 	}
 }

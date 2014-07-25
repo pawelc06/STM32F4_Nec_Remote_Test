@@ -48,8 +48,11 @@
 #include "stm32l100c_discovery.h"
 #include "../FatFs_0.10/src/ff.h"
 #include "stdbool.h"
+//#include "rct3.h"
 
 //#define SAMPLE_WIDTH_16 1
+#define WAV_FROM_INT_MEMORY 1
+#define SAMPLE_BUFFER_SIZE 512
 
 /* Exported types ------------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

@@ -12,12 +12,14 @@
 
 #define SAMPLING_FREQ 11025
 //#define DMA_TIMER_VAL 1451 //for 22050
-#define DMA_TIMER_VAL (1000.0/SAMPLING_FREQ)/31.25E-06 //for 22050
+#define DMA_TIMER_VAL (1000.0/SAMPLING_FREQ)/31.25E-06
 
 void DAC_PreConfig(void);
 
 void convertBufferTo12bit(int16_t * buffer);
 
 void playWav(uint8_t * name);
+void playWavFromMemory(uint8_t * memBuffer);
+void playWavFromIntMemory(uint8_t * memBuffer);
 
 #endif /* WAVEPLAYER_H_ */
