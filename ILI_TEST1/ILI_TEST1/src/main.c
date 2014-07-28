@@ -31,9 +31,7 @@
 #include "waveplayer.h"
 #include "rct3.h"
 
-/** @addtogroup STM32L100C-Discovery_Demo
- * @{
- */
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
