@@ -93,8 +93,7 @@ static void send_font_bitmap_on_background(int xPixel, int yPixel, uint8_t *glyp
 
 	uint8_t i, j, k, bajt;
 	uint16_t p=0;
-	uint16_t x0 = xPixel;
-	uint16_t y0 = yPixel;
+
 
 	//Set_active_window(xPixel, yPixel, xPixel+glyphWidth-1, yPixel+glyphHeight-1);
 	//Lcd_SetRegion(xPixel, yPixel, xPixel+glyphWidth-1, yPixel+glyphHeight-1);
