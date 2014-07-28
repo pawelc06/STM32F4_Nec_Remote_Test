@@ -394,6 +394,73 @@ void Gui_DrawFont_GBK24(u16 x, u16 y, u16 fc, u16 bc, u8 *s)
 		}
 	}
 }
+
+void Gui_DrawFont_GBK24_bk(u16 x, u16 y, u16 fc, u16 bc, u8 *s)
+{
+	unsigned char i,j;
+	unsigned short k;
+
+	while(*s)
+	{
+		if( *s < 0x80 )
+		{
+			k=*s;
+			if (k>32) k-=32; else k=0;
+
+		    for(i=0;i<16;i++)
+			for(j=0;j<8;j++)
+				{
+			    	if(asc16[k*16+i]&(0x80>>j))
+					Gui_DrawPoint(x+j,y+i,fc);
+					else
+					{
+						//if (fc!=bc) Gui_DrawPoint(x+j,y+i,bc);
+					}
+				}
+			s++;x+=8;
+		}
+		else
+		{
+
+			for (k=0;k<hz24_num;k++)
+			{
+			  if ((hz24[k].Index[0]==*(s))&&(hz24[k].Index[1]==*(s+1)))
+			  {
+				    for(i=0;i<24;i++)
+				    {
+						for(j=0;j<8;j++)
+							{
+						    	if(hz24[k].Msk[i*3]&(0x80>>j))
+								Gui_DrawPoint(x+j,y+i,fc);
+								else
+								{
+									//if (fc!=bc) Gui_DrawPoint(x+j,y+i,bc);
+								}
+							}
+						for(j=0;j<8;j++)
+							{
+						    	if(hz24[k].Msk[i*3+1]&(0x80>>j))	Gui_DrawPoint(x+j+8,y+i,fc);
+								else {
+									//if (fc!=bc) Gui_DrawPoint(x+j+8,y+i,bc);
+								}
+							}
+						for(j=0;j<8;j++)
+							{
+						    	if(hz24[k].Msk[i*3+2]&(0x80>>j))
+								Gui_DrawPoint(x+j+16,y+i,fc);
+								else
+								{
+									//if (fc!=bc) Gui_DrawPoint(x+j+16,y+i,bc);
+								}
+							}
+				    }
+			  }
+			}
+			s+=2;x+=24;
+		}
+	}
+}
+
 void Gui_DrawFont_Num32(u16 x, u16 y, u16 fc, u16 bc, u16 num)
 {
 	unsigned char i,j,k,c;

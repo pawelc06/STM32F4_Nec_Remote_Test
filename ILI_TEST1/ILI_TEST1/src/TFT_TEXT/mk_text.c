@@ -46,12 +46,15 @@ static void send_glyph_byte(uint8_t bajt, uint8_t width) {
 	}
 }
 
-static void send_glyph_byte_on_bakcground(uint8_t bajt, uint8_t width) {
+static void send_glyph_byte_on_bakcground(uint16_t x,uint16_t y,uint8_t bajt, uint8_t width) {
 	uint8_t i;
 	for(i=0; i<width; i++ ) {
 
 
-		if(bajt&0x80) Draw_pixel();
+		//if(bajt&0x80) Draw_pixel();
+
+		if(bajt&0x80)
+			Gui_DrawPoint(x+i,y,Color);
 		//else Draw_bk_pixel();
 
 
@@ -90,23 +93,25 @@ static void send_font_bitmap_on_background(int xPixel, int yPixel, uint8_t *glyp
 
 	uint8_t i, j, k, bajt;
 	uint16_t p=0;
+	uint16_t x0 = xPixel;
+	uint16_t y0 = yPixel;
 
 	//Set_active_window(xPixel, yPixel, xPixel+glyphWidth-1, yPixel+glyphHeight-1);
 	//Lcd_SetRegion(xPixel, yPixel, xPixel+glyphWidth-1, yPixel+glyphHeight-1);
-	setAddrWindow(xPixel, yPixel, xPixel+glyphWidth-1, yPixel+glyphHeight-1);
+	//setAddrWindow(xPixel, yPixel, xPixel+glyphWidth-1, yPixel+glyphHeight-1);
 
-	LCD_CS_CLR;
-	LCD_RS_SET;
+	//LCD_CS_CLR;
+	//LCD_RS_SET;
 
 	for(i=0; i<glyphHeight; i++ ) {
 		for(j=0, k=0; j<glyphWidth; j+=8, k++) {
 			bajt = glyph[ p++ ] ;
-			if( ((k+1)*8)<=glyphWidth ) send_glyph_byte_on_bakcground(bajt, 8);
-			else send_glyph_byte_on_bakcground(bajt, glyphWidth-(k*8));
+			if( ((k+1)*8)<=glyphWidth ) send_glyph_byte_on_bakcground(xPixel+j,yPixel+i,bajt, 8);
+			else send_glyph_byte_on_bakcground(xPixel+j,yPixel+i,bajt, glyphWidth-(k*8));
 		}
 	}
 
-	LCD_CS_SET;
+	//LCD_CS_SET;
 }
 
 
@@ -203,22 +208,11 @@ void tft_mputs_on_background( int x, int y, char * s, uint32_t color ) {
 
 			offset = currentFont.charInfo[ *s - startChar  ].offset;
 
-			send_font_bitmap(x, y, glyph+offset, gH, gW );
+			send_font_bitmap_on_background(x, y, glyph+offset, gH, gW );
 			x = x + gW + gIS;
 
 		} else {
-			//Set_active_window(x,y,x+gS-1,y+gH-1);
-			//Lcd_SetRegion(x,y,x+gS-1,y+gH-1);
-			setAddrWindow(x,y,x+gS-1,y+gH-1);
 
-			//LCD_CS_CLR;
-			//LCD_RS_SET;
-
-			for(offset=0;offset<gS*gH;offset++) {
-				//Draw_bk_pixel();
-				//Draw_bk_pixel();
-
-			}
 			x+=gS;
 
 			//LCD_CS_SET;
