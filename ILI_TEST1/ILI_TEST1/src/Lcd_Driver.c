@@ -916,7 +916,7 @@ void Gui_DrawPoint(u16 x,u16 y,u16 Data)
 ******************************************/
 unsigned int Lcd_ReadPoint(u16 x,u16 y)
 {
-  unsigned int Data;
+  unsigned int Data=0;
   Lcd_SetXY(x,y);
 
   //Lcd_ReadData();//¶ŞµôÎŢÓĂ×Ö˝Ú
@@ -1222,14 +1222,14 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 	           if((mode == 1) && ((0x000F & ss)%2)){
 	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
-	           				tft_puts(xpos,ypos, "  ", white, black);
+	           				tft_puts(xpos,ypos, "  ", blue, white);
 
 
 	           				xpos = xpos+2*short_break;
 
 	           			} else {
 	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
-	           				tft_puts(xpos,ypos, datah, white, black);
+	           				tft_puts(xpos,ypos, datah, blue, white);
 
 	           				//xpos = xpos+short_break;
 
@@ -1241,20 +1241,20 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 	           			}
 
-	           tft_puts(xpos,ypos, colon, white, black);
+	           tft_puts(xpos,ypos, colon, blue, white);
 
 	           xpos = xpos+short_break;
 
 	           if((mode == 2) && ((0x000F & ss)%2)){
 	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
-	           	           				tft_puts(xpos,ypos, "  ", white, black);
+	           	           				tft_puts(xpos,ypos, "  ", blue, white);
 
 
 
 
 	           	           			} else {
 	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
-	           	           				tft_puts(xpos,ypos, datam, white, black);
+	           	           				tft_puts(xpos,ypos, datam, blue, white);
 
 	           	           				//xpos = xpos+short_break;
 
@@ -1271,6 +1271,106 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 
 }
+
+
+void LCD_Write_TimeBCD_On_Background(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
+{
+
+	unsigned char datas[6];
+	unsigned char datah[3];
+	unsigned char datam[3];
+
+	unsigned colon[2];
+
+	uint8_t short_break=47;
+
+	u16 hh=14;
+	u16 mm=33;
+	u16 ss=55;
+
+
+	hh = RTC_TimeStructure1->RTC_Hours;
+	mm = RTC_TimeStructure1->RTC_Minutes;
+	ss = RTC_TimeStructure1->RTC_Seconds;
+
+	//hours
+
+	datah[0] = datas[0] = (hh >> 4)+48;
+	datah[1] = datas[1] = (0x000F & hh)+48;
+
+	datah[2] = 0;
+
+	if(((0x000F & ss)%2)){
+		colon[0] = ':';
+	}	else {
+		colon[0] = ' ';
+	}
+
+	colon[1] = 0;
+
+
+
+	datam[0] = datas[3] = (mm >> 4)+48;
+	datam[1] = datas[4] = (0x000F & mm)+48;
+	datas[5] = 0;
+
+	datam[2] = 0;
+
+
+	           setCurrentFont( &LetsgoDigital60ptFontInfo );
+
+	           if((mode == 1) && ((0x000F & ss)%2)){
+	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
+	           				tft_puts_on_background(xpos,ypos, "  ", blue);
+
+
+	           				xpos = xpos+2*short_break;
+
+	           			} else {
+	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
+	           				tft_puts_on_background(xpos,ypos, datah, blue);
+
+	           				//xpos = xpos+short_break;
+
+	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[1]);
+	           				//tft_puts_on_background(xpos,ypos, datas[1], red, white);
+	           				xpos = xpos+2*short_break;
+
+
+
+	           			}
+
+	           tft_puts_on_background(xpos,ypos, colon, blue);
+
+	           xpos = xpos+short_break;
+
+	           if((mode == 2) && ((0x000F & ss)%2)){
+	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
+	           	           				tft_puts_on_background(xpos,ypos, "  ", blue);
+
+
+
+
+	           	           			} else {
+	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
+	           	           				tft_puts_on_background(xpos,ypos, datam, blue);
+
+	           	           				//xpos = xpos+short_break;
+
+	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[1]);
+	           	           				//tft_puts_on_background(xpos,ypos, datas[1], red, white);
+	           	           				//xpos = xpos+4*short_break;
+
+
+
+	           	           			}
+
+
+
+
+
+}
+
 
 
 void LCD_Write_TimeBCD(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)

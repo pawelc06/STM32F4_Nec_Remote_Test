@@ -15,6 +15,8 @@ extern FONT_INFO currentFont;
 void setCurrentFont( FONT_INFO * font );
 
 void tft_puts( int x, int y, char * s, uint32_t color, uint32_t bk_color );
+void tft_mputs_on_background( int x, int y, char * s, uint32_t color );
+void tft_puts_on_background( int x, int y, char * s, uint32_t color);
 void tft_puts_P( int x, int y, char * s, uint32_t color, uint32_t bk_color );
 
 void tft_mputs( int x, int y, char * s, uint32_t color, uint32_t bk_color );
