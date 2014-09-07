@@ -65,7 +65,7 @@ uint16_t bkColor;
 
 //uint8_t Bk_red, Bk_green, Bk_blue;
 
-
+volatile u16 last_hours, last_minutes, last_seconds;
 
 
 
@@ -1183,12 +1183,11 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 	unsigned colon[2];
 
-	uint8_t short_break=47;
+	uint8_t short_break = 47;
 
-	u16 hh=14;
-	u16 mm=33;
-	u16 ss=55;
-
+	u16 hh = 14;
+	u16 mm = 33;
+	u16 ss = 55;
 
 	hh = RTC_TimeStructure1->RTC_Hours;
 	mm = RTC_TimeStructure1->RTC_Minutes;
@@ -1196,75 +1195,93 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 	//hours
 
-	datah[0] = datas[0] = (hh >> 4)+48;
-	datah[1] = datas[1] = (0x000F & hh)+48;
+	datah[0] = datas[0] = (hh >> 4) + 48;
+	datah[1] = datas[1] = (0x000F & hh) + 48;
 
 	datah[2] = 0;
 
-	if(((0x000F & ss)%2)){
+	if (((0x000F & ss) % 2)) {
 		colon[0] = ':';
-	}	else {
+	} else {
 		colon[0] = ' ';
 	}
 
 	colon[1] = 0;
 
-
-
-	datam[0] = datas[3] = (mm >> 4)+48;
-	datam[1] = datas[4] = (0x000F & mm)+48;
+	datam[0] = datas[3] = (mm >> 4) + 48;
+	datam[1] = datas[4] = (0x000F & mm) + 48;
 	datas[5] = 0;
 
 	datam[2] = 0;
 
+	setCurrentFont(&LetsgoDigital60ptFontInfo);
 
-	           setCurrentFont( &LetsgoDigital60ptFontInfo );
+	switch (mode) {
+	case 0:
+		if (last_hours != hh)
+			tft_puts(xpos, ypos, datah, blue, white);
 
-	           if((mode == 1) && ((0x000F & ss)%2)){
-	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
-	           				tft_puts(xpos,ypos, "  ", blue, white);
+		xpos = xpos + 2 * short_break;
+		tft_puts(xpos, ypos, colon, blue, white);
+		xpos = xpos + short_break;
 
+		if (last_minutes != mm)
+			tft_puts(xpos, ypos, datam, blue, white);
 
-	           				xpos = xpos+2*short_break;
+		last_hours = hh;
+		last_minutes = mm;
 
-	           			} else {
-	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
-	           				tft_puts(xpos,ypos, datah, blue, white);
+		break;
+	case 1:
+		if ((0x000F & ss) % 2) {
+			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
+			tft_puts(xpos, ypos, "  ", blue, white);
 
-	           				//xpos = xpos+short_break;
+			xpos = xpos + 2 * short_break;
 
-	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[1]);
-	           				//tft_puts(xpos,ypos, datas[1], red, white);
-	           				xpos = xpos+2*short_break;
+		} else {
 
+			tft_puts(xpos, ypos, datah, blue, white);
 
+			xpos = xpos + 2 * short_break;
 
-	           			}
+		}
+		tft_puts(xpos, ypos, colon, blue, white);
 
-	           tft_puts(xpos,ypos, colon, blue, white);
+		xpos = xpos + short_break;
+		tft_puts(xpos, ypos, datam, blue, white);
+		break;
+	case 2:
+		tft_puts(xpos, ypos, datah, blue, white);
 
-	           xpos = xpos+short_break;
+		xpos = xpos + 2 * short_break;
+		tft_puts(xpos, ypos, colon, blue, white);
 
-	           if((mode == 2) && ((0x000F & ss)%2)){
-	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
-	           	           				tft_puts(xpos,ypos, "  ", blue, white);
+		xpos = xpos + short_break;
+		if ((0x000F & ss) % 2) {
+			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
 
+			tft_puts(xpos, ypos, "  ", blue, white);
 
+		} else {
+			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
 
+			tft_puts(xpos, ypos, datam, blue, white);
 
-	           	           			} else {
-	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
-	           	           				tft_puts(xpos,ypos, datam, blue, white);
+			//xpos = xpos+short_break;
 
-	           	           				//xpos = xpos+short_break;
+			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[1]);
+			//tft_puts(xpos,ypos, datas[1], red, white);
+			//xpos = xpos+4*short_break;
 
-	           	           				//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[1]);
-	           	           				//tft_puts(xpos,ypos, datas[1], red, white);
-	           	           				//xpos = xpos+4*short_break;
+		}
+		break;
+	case 3:
+		break;
+	default:
+		break;
 
-
-
-	           	           			}
+	}
 
 
 

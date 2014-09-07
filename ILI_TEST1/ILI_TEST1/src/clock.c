@@ -15,8 +15,6 @@ void displayTime(){
     	RTC_TimeTypeDef  RTC_TimeStructure1;
 
 
-
-
 		RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure1);
 
 		rtc_time = RTC_TimeStructure1.RTC_Hours;
