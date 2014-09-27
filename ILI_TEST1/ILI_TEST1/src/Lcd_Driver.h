@@ -128,7 +128,7 @@ char Read_Register(char Addr, char xParameter);
 static uint8_t spi_readwrite(uint32_t spi, uint8_t data);
 void LCD_Write_TimeBCD(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1);
 void LCD_Write_Colon(u16 xpos,u16 ypos);
-void itoa(uint16_t n, int8_t s[]);
+void itoa(uint16_t n, uint8_t s[]);
 void reverse(int8_t s[]);
 uint32_t LCD_RGB_24to16(uint32_t color);
 void fillRect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color);

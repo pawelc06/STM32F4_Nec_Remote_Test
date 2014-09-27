@@ -11,5 +11,6 @@ uint8_t bcd2dec(uint8_t numberbcd);
 uint8_t dec2bcd(uint8_t numberdec);
 
 void displayDate();
+void updateAndDisplayDate();
 void displayTime();
 

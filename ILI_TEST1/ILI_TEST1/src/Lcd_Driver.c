@@ -5,6 +5,8 @@
 #include "GUI.h"
 #include <string.h>
 
+extern bool updateDate;
+
 /******************** (C) COPYRIGHT 2011 ÉÁŇ«µç×ÓÇ¶ČëĘ˝żŞ·˘ą¤×÷ĘŇ ********************
 //ÉîŰÚTFTŇşľ§ÄŁ×éĹú·˘
 //×¨×˘Ňşľ§Ĺú·˘
@@ -67,7 +69,7 @@ uint16_t bkColor;
 
 volatile u16 last_hours, last_minutes, last_seconds;
 
-
+volatile uint8_t last_year, last_month, last_day, last_weekday;
 
 
 uint8_t Red, Green, Blue;
@@ -1080,7 +1082,7 @@ static uint8_t spi_readwrite(uint32_t spi, uint8_t data)
 * Konwersja Int na String
 * x = input integer, s = output buffer
 */
-void itoa(uint16_t n, int8_t s[]){
+void itoa(uint16_t n, uint8_t s[]){
 	int i, sign;
 	if ((sign = n) < 0) /* record sign */
 	n = -n; /* make n positive */
@@ -1088,11 +1090,15 @@ void itoa(uint16_t n, int8_t s[]){
 	do { /* generate digits in reverse order */
 		s[i++] = n % 10 + '0'; /* get next digit */
 	} while ((n /= 10) > 0); /* delete it */
+
 	if (sign < 0)
 	s[i++] = '-';
 
 	if(i<2)
-		s[i] = '0';
+		s[i++] = '0';
+
+	/* ending of the string */
+	s[i] = 0;
 	reverse(s);
 }
 
@@ -1125,10 +1131,10 @@ void LCD_Write_Colon(u16 xpos,u16 ypos){
 void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 {
 	uint8_t year, month, day, weekday;
-	const u16 short_break = 10;
-	char yearStr[5];
-	char mStr[5];
-	char dStr[5];
+	const u16 short_break = 23;
+	uint8_t yearStr[5];
+	uint8_t mStr[5];
+	uint8_t dStr[5];
 
 	uint8_t datas[9];
 
@@ -1140,17 +1146,36 @@ void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 	weekday = RTC_DateStruct->RTC_WeekDay;
 
 	//sprintf(yearStr,"%02d",year);
-	itoa(year+2000,yearStr);
-	itoa(month,mStr);
-	itoa(day,dStr);
+	itoa((uint16_t)year+2000,yearStr);
+	itoa((uint16_t)month,mStr);
+	itoa((uint16_t)day,dStr);
 
 
 
 	setCurrentFont( &Verdana26ptFontInfo);
+	//setCurrentFont( &DefaultFontInfo);
 
-					tft_puts(xpos,ypos, "2014-07-08", white, black);
-					tft_puts(xpos,ypos+40, "wtorek", white, black);
+					//tft_puts(xpos,ypos, "2014-07-08", white, black);
+					//tft_puts(xpos,ypos+40, "wtorek", white, black);
 					//tft_puts(xpos,ypos+80, "ALARM1", white, black);
+
+
+	tft_puts(xpos,ypos, yearStr, white, black);
+	xpos = xpos+4*short_break;
+
+	tft_puts(xpos,ypos, "-", white, black);
+
+	xpos = xpos+short_break;
+
+	tft_puts(xpos,ypos, mStr, white, black);
+
+	xpos = xpos+2*short_break;
+
+	tft_puts(xpos,ypos, "-", white, black);
+
+	xpos = xpos+short_break;
+
+	tft_puts(xpos,ypos, dStr, white, black);
 
 
 	/*
@@ -1172,6 +1197,7 @@ void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 	Gui_DrawFont_GBK24(xpos,ypos, BLUE, GRAY0, dStr);
 	*/
 
+
 }
 
 void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
@@ -1188,10 +1214,23 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 	u16 hh = 14;
 	u16 mm = 33;
 	u16 ss = 55;
+	uint32_t color = white;
+	uint32_t bkColor = black;
+	uint8_t year, month, day, weekday;
 
 	hh = RTC_TimeStructure1->RTC_Hours;
 	mm = RTC_TimeStructure1->RTC_Minutes;
 	ss = RTC_TimeStructure1->RTC_Seconds;
+
+
+
+
+
+
+
+
+
+
 
 	//hours
 
@@ -1218,15 +1257,20 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 	switch (mode) {
 	case 0:
-		if (last_hours != hh)
-			tft_puts(xpos, ypos, datah, blue, white);
+		if (last_hours != hh){
+			tft_puts(xpos, ypos, datah, color, bkColor);
+
+			//if((last_hours == 23) && (hh==0))
+
+
+		}
 
 		xpos = xpos + 2 * short_break;
-		tft_puts(xpos, ypos, colon, blue, white);
+		tft_puts(xpos, ypos, colon, color, bkColor);
 		xpos = xpos + short_break;
 
 		if (last_minutes != mm)
-			tft_puts(xpos, ypos, datam, blue, white);
+			tft_puts(xpos, ypos, datam, color, bkColor);
 
 		last_hours = hh;
 		last_minutes = mm;
@@ -1235,43 +1279,43 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 	case 1:
 		if ((0x000F & ss) % 2) {
 			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
-			tft_puts(xpos, ypos, "  ", blue, white);
+			tft_puts(xpos, ypos, "  ", color, bkColor);
 
 			xpos = xpos + 2 * short_break;
 
 		} else {
 
-			tft_puts(xpos, ypos, datah, blue, white);
+			tft_puts(xpos, ypos, datah, color, bkColor);
 
 			xpos = xpos + 2 * short_break;
 
 		}
-		tft_puts(xpos, ypos, colon, blue, white);
+		tft_puts(xpos, ypos, colon, color, bkColor);
 
 		xpos = xpos + short_break;
-		tft_puts(xpos, ypos, datam, blue, white);
+		tft_puts(xpos, ypos, datam, color, bkColor);
 		break;
 	case 2:
-		tft_puts(xpos, ypos, datah, blue, white);
+		tft_puts(xpos, ypos, datah, color, bkColor);
 
 		xpos = xpos + 2 * short_break;
-		tft_puts(xpos, ypos, colon, blue, white);
+		tft_puts(xpos, ypos, colon, color, bkColor);
 
 		xpos = xpos + short_break;
 		if ((0x000F & ss) % 2) {
 			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
 
-			tft_puts(xpos, ypos, "  ", blue, white);
+			tft_puts(xpos, ypos, "  ", color, bkColor);
 
 		} else {
 			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[0]);
 
-			tft_puts(xpos, ypos, datam, blue, white);
+			tft_puts(xpos, ypos, datam, color, bkColor);
 
 			//xpos = xpos+short_break;
 
 			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,datas[1]);
-			//tft_puts(xpos,ypos, datas[1], red, white);
+			//tft_puts(xpos,ypos, datas[1], red, bkColor);
 			//xpos = xpos+4*short_break;
 
 		}
@@ -1284,7 +1328,8 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 	}
 
 
-
+	if(!hh && !mm && !ss)
+				updateDate = true;
 
 
 }

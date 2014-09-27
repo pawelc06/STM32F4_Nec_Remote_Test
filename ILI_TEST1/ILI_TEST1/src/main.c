@@ -60,8 +60,11 @@ GPIO_InitTypeDef GPIO_InitStructure;
 
 //void Delayms(__IO uint32_t nCount);
 
+extern day;
+
 unsigned char Num[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 volatile bool updated = false;
+volatile bool updateDate = false;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -237,15 +240,16 @@ int main(void) {
 
 
 
-	//displayDate();
+
 
 	fresult = f_mount(&g_sFatFs, "0:0", 1);
 
-	LCD_BMP("kasia.bmp");
+	//LCD_BMP("kasia.bmp");
 
 	//Gui_DrawFont_GBK24_bk(20,120, BLUE, WHITE, "1234 abcd");
 
 	//playWav("rct3.wav");
+
 
 
 	/* tests */
@@ -253,13 +257,25 @@ int main(void) {
 	//playWav("bj8.wav");
 	//playWav("im16.wav");
 
-	playWavFromIntMemory(rooster3);
+	//playWavFromIntMemory(rooster3);
+
+
+	displayDate();
 
 	while (1) {
 		if (updated) {
 			displayTime();
 			updated = false;
+
+			if(updateDate){
+							updateAndDisplayDate();
+							updateDate = false;
+					}
+
 		}
+
+
+
 
 
 	}
@@ -363,9 +379,9 @@ static void RTC_Config32768Internal(void) {
 
 	/* Set the time to 05h 20mn 00s AM */
 	RTC_TimeStructure.RTC_H12 = RTC_H12_PM;
-	RTC_TimeStructure.RTC_Hours = 0x12;
-	RTC_TimeStructure.RTC_Minutes = 0x00;
-	RTC_TimeStructure.RTC_Seconds = 0x00;
+	RTC_TimeStructure.RTC_Hours = 0x23;
+	RTC_TimeStructure.RTC_Minutes = 0x59;
+	RTC_TimeStructure.RTC_Seconds = 0x50;
 
 	RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
 
@@ -373,6 +389,8 @@ static void RTC_Config32768Internal(void) {
 	RTC_DateStruct.RTC_Month = 7;
 	RTC_DateStruct.RTC_Date = 5;
 	RTC_DateStruct.RTC_WeekDay = 6;
+
+	//day = 5;
 
 	RTC_SetDate(RTC_Format_BIN, &RTC_DateStruct);
 

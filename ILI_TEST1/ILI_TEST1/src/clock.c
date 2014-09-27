@@ -5,7 +5,7 @@
 
 
 
-
+volatile uint8_t day = 0;
 
 
 
@@ -26,20 +26,56 @@ void displayTime(){
 
 
 
-
 }
 
 void displayDate(){
-	uint8_t year, month, day, weekday;
+	//uint8_t year, month, day, weekday;
 
 	RTC_DateTypeDef  RTC_DateStruct;
 
 
+		RTC_GetDate(RTC_Format_BIN, &RTC_DateStruct);
 
 
-	RTC_GetDate(RTC_Format_BIN, &RTC_DateStruct);
+	day = RTC_DateStruct.RTC_Date;
+
 
 	LCD_Write_Date(55,100,&RTC_DateStruct);
+
+	//RTC_ITConfig(RTC_IT_WUT, ENABLE);
+
+	//LCD_Write_TimeBCD(55, 20, &RTC_TimeStructure1);
+
+}
+
+
+void updateAndDisplayDate(){
+	//uint8_t year, month, day, weekday;
+
+	RTC_DateTypeDef  RTC_DateStruct;
+
+	//RTC_ITConfig(RTC_IT_WUT, DISABLE);
+
+	//RTC_DateStructInit(&RTC_DateStruct);
+
+	//RTC_GetDate(RTC_Format_BIN, &RTC_DateStruct);
+
+	/*
+	if(day == 0)
+		day = RTC_DateStruct.RTC_Date;
+		*/
+
+	do{
+		RTC_GetDate(RTC_Format_BIN, &RTC_DateStruct);
+	}
+	while(RTC_DateStruct.RTC_Date == day);
+
+	day = RTC_DateStruct.RTC_Date;
+
+
+	LCD_Write_Date(55,100,&RTC_DateStruct);
+
+	//RTC_ITConfig(RTC_IT_WUT, ENABLE);
 
 	//LCD_Write_TimeBCD(55, 20, &RTC_TimeStructure1);
 
