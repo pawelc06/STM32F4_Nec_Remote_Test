@@ -386,8 +386,8 @@ static void RTC_Config32768Internal(void) {
 	RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
 
 	RTC_DateStruct.RTC_Year = 14;
-	RTC_DateStruct.RTC_Month = 7;
-	RTC_DateStruct.RTC_Date = 5;
+	RTC_DateStruct.RTC_Month = 10;
+	RTC_DateStruct.RTC_Date = 4;
 	RTC_DateStruct.RTC_WeekDay = 6;
 
 	//day = 5;

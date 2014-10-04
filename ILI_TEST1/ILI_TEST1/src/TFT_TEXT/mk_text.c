@@ -161,6 +161,14 @@ void tft_mputs( int x, int y, char * s, uint32_t color, uint32_t bk_color ) {
 			offset = currentFont.charInfo[ *s - startChar  ].offset;
 
 			send_font_bitmap(x, y, glyph+offset, gH, gW );
+
+			/* fill interspace between letters */
+			setAddrWindow(x + gW,y,x + gW + gIS,y+gH-1);
+			for(offset=0;offset<gIS*gH;offset++) {
+							Draw_bk_pixel();
+
+						}
+
 			x = x + gW + gIS;
 
 		} else {
@@ -173,8 +181,7 @@ void tft_mputs( int x, int y, char * s, uint32_t color, uint32_t bk_color ) {
 
 			for(offset=0;offset<gS*gH;offset++) {
 				Draw_bk_pixel();
-				Draw_bk_pixel();
-				//Draw_bk_pixel();
+
 			}
 			x+=gS;
 

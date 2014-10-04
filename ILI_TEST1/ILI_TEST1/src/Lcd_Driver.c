@@ -1131,7 +1131,7 @@ void LCD_Write_Colon(u16 xpos,u16 ypos){
 void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 {
 	uint8_t year, month, day, weekday;
-	const u16 short_break = 23;
+	const u16 short_break = 22;
 	uint8_t yearStr[5];
 	uint8_t mStr[5];
 	uint8_t dStr[5];

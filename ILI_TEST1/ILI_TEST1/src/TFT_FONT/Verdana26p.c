@@ -3590,7 +3590,7 @@ const FONT_INFO Verdana26ptFontInfo =
 {
     35,  // Character height 
     '!',  //  Start character 
-    6,  //  number of pixels of interspace between characters
+    4,  //  number of pixels of interspace between characters
     33,  // number of pixels of space character
     Verdana26ptDescriptors, // Character descriptor array 
     Verdana26ptBitmaps, // Character bitmap array 
