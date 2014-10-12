@@ -299,12 +299,14 @@ void TIM6_IRQHandler(void){
 }
 */
 
-void TIM2_IRQHandler(void){
+void TIM2_IRQHandler(void) {
 
-	RTC_TimeTypeDef  RTC_TimeStructure;
-		uint8_t sec, min, hours;
+	RTC_TimeTypeDef RTC_TimeStructure;
+	RTC_DateTypeDef RTC_DateStructure;
+	uint8_t sec, min, hours;
+	uint8_t year, month, day;
 
-	if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET){
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
 
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 
@@ -312,19 +314,21 @@ void TIM2_IRQHandler(void){
 		static uint8_t bstated = 0; //ostatnie stany przycisku
 		static uint8_t bstatem = 0; //ostatnie stany przycisku
 
+		if ((bstateu = (bstateu << 1 & 0xf)
+				| (UP_BUTTON_GPIO_PORT->IDR >> BUTTON_UP & 1)) == 1) {
+			//(STM_EVAL_PBGetState(BUTTON_UP)))== 0){
 
+			// byl zwolniony, teraz jest wcisniety - zmiana stanu LED
+			//LED_PORT->ODR ^= 1 << GREEN_LED_BIT | 1 << BLUE_LED_BIT;
 
-		if ((bstateu = (bstateu << 1 & 0xf) |
-		        (UP_BUTTON_GPIO_PORT->IDR >> BUTTON_UP & 1)) == 1){
-				//(STM_EVAL_PBGetState(BUTTON_UP)))== 0){
+			if (mode <= 2)
+				RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
 
-		         // byl zwolniony, teraz jest wcisniety - zmiana stanu LED
-		        //LED_PORT->ODR ^= 1 << GREEN_LED_BIT | 1 << BLUE_LED_BIT;
-
-			RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
+			if (mode > 2)
+				RTC_GetDate(RTC_Format_BIN, &RTC_DateStructure);
 
 			switch (mode) {
-			case 1:
+			case 1: //hours
 				hours = RTC_TimeStructure.RTC_Hours;
 				hours = bcd2dec(hours);
 				hours = (hours + 1) % 60;
@@ -332,7 +336,7 @@ void TIM2_IRQHandler(void){
 				RTC_TimeStructure.RTC_Hours = hours;
 				break;
 
-			case 2:
+			case 2: //minutes
 				min = RTC_TimeStructure.RTC_Minutes;
 				min = bcd2dec(min);
 				min = (min + 1) % 60;
@@ -340,106 +344,142 @@ void TIM2_IRQHandler(void){
 				RTC_TimeStructure.RTC_Minutes = min;
 				break;
 
-			case 3:
-				RTC_TimeStructure.RTC_Seconds = 0;
+			case 3: //year
+				year = RTC_DateStructure.RTC_Year;
+				year = (year + 1) % 100;
+				RTC_DateStructure.RTC_Year = year;
+				break;
+			case 4: //month
+				month = RTC_DateStructure.RTC_Month;
+				month = (month + 1) % 13;
+				if (!month)
+					month = 1;
+				RTC_DateStructure.RTC_Month = month;
+				break;
+			case 5: //day
+				day = RTC_DateStructure.RTC_Date;
+				day = (day + 1) % 32;
+				if (!day)
+					day = 1;
+				RTC_DateStructure.RTC_Date = day;
 				break;
 
 			default:
 				break;
 			}
 
+			if (mode > 2)
+				RTC_SetDate(RTC_Format_BIN, &RTC_DateStructure);
 
+			if (mode <= 2) {
+				RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
+				updated = true;
+			}
 
+			if (toggleFlag) {
+				STM_EVAL_LEDOn(LED3);
+			} else {
+				STM_EVAL_LEDOff(LED3);
+			}
 
-
-					RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
-					updated = true;
-
-				if(toggleFlag){
-					  STM_EVAL_LEDOn(LED3);
-				} else {
-					   STM_EVAL_LEDOff(LED3);
-				}
-
-					   toggleFlag = !toggleFlag;
+			toggleFlag = !toggleFlag;
 		}
 
-		if ((bstated = (bstated << 1 & 0xf) |
-				        (UP_BUTTON_GPIO_PORT->IDR >> BUTTON_DOWN & 1)) == 1){
-						//(STM_EVAL_PBGetState(BUTTON_UP)))== 0){
+		if ((bstated = (bstated << 1 & 0xf)
+				| (UP_BUTTON_GPIO_PORT->IDR >> BUTTON_DOWN & 1)) == 1) {
+			//(STM_EVAL_PBGetState(BUTTON_UP)))== 0){
 
-				         // byl zwolniony, teraz jest wcisniety - zmiana stanu LED
-				        //LED_PORT->ODR ^= 1 << GREEN_LED_BIT | 1 << BLUE_LED_BIT;
+			// byl zwolniony, teraz jest wcisniety - zmiana stanu LED
+			//LED_PORT->ODR ^= 1 << GREEN_LED_BIT | 1 << BLUE_LED_BIT;
 
-							RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
+			RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
 
-							switch (mode) {
-										case 1:
-											hours = RTC_TimeStructure.RTC_Hours;
-											hours = bcd2dec(hours);
-											if(min > 0){
-												hours = (hours - 1) % 24;
-											} else {
-												hours = 23;
-											}
-											hours = dec2bcd(hours);
-											RTC_TimeStructure.RTC_Hours = hours;
-											break;
+			switch (mode) {
+			case 1:
+				hours = RTC_TimeStructure.RTC_Hours;
+				hours = bcd2dec(hours);
+				if (min > 0) {
+					hours = (hours - 1) % 24;
+				} else {
+					hours = 23;
+				}
+				hours = dec2bcd(hours);
+				RTC_TimeStructure.RTC_Hours = hours;
+				break;
 
-										case 2:
-											min = RTC_TimeStructure.RTC_Minutes;
-											min = bcd2dec(min);
-											if(min > 0){
-												min = (min-1)%60;
-											} else {
-												min = 59;
-											}
-											min = dec2bcd(min);
-											RTC_TimeStructure.RTC_Minutes = min;
-											break;
+			case 2:
+				min = RTC_TimeStructure.RTC_Minutes;
+				min = bcd2dec(min);
+				if (min > 0) {
+					min = (min - 1) % 60;
+				} else {
+					min = 59;
+				}
+				min = dec2bcd(min);
+				RTC_TimeStructure.RTC_Minutes = min;
+				break;
 
-										case 3:
-											RTC_TimeStructure.RTC_Seconds = 0;
-											break;
+			case 3: //year
+				year = RTC_DateStructure.RTC_Year;
+				year = year - 1;
+				if(year<0)
+					year = 0;
+				RTC_DateStructure.RTC_Year = year;
+				break;
+			case 4: //month
+				month = RTC_DateStructure.RTC_Month;
+				month = (month - 1) % 13;
+				if (!month)
+					month = 12;
+				RTC_DateStructure.RTC_Month = month;
+				break;
+			case 5: //day
+				day = RTC_DateStructure.RTC_Date;
+				day = (day - 1) % 32;
+				if (!day)
+					day = 31;
+				RTC_DateStructure.RTC_Date = day;
+				break;
 
-										default:
-											break;
-										}
+			default:
+				break;
+			}
 
+			if (mode > 2)
+							RTC_SetDate(RTC_Format_BIN, &RTC_DateStructure);
 
-
-
+						if (mode <= 2) {
 							RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
 							updated = true;
-
-						if(toggleFlag){
-							  STM_EVAL_LEDOn(LED3);
-						} else {
-							   STM_EVAL_LEDOff(LED3);
 						}
 
-							   toggleFlag = !toggleFlag;
-				}
+			if (toggleFlag) {
+				STM_EVAL_LEDOn(LED3);
+			} else {
+				STM_EVAL_LEDOff(LED3);
+			}
 
+			toggleFlag = !toggleFlag;
+		}
 
 		/*************************************/
-		if ((bstatem = (bstatem << 1 & 0xf) |
-						        (MODE_BUTTON_GPIO_PORT->IDR >> BUTTON_MODE & 1)) == 1){
+		if ((bstatem = (bstatem << 1 & 0xf)
+				| (MODE_BUTTON_GPIO_PORT->IDR >> BUTTON_MODE & 1)) == 1) {
 
-									mode = (mode+1)%3;
-									//updated = true;
+			mode = (mode + 1) % 6;
+			if (!mode)
+				displayDate();
+			//updated = true;
 
-								if(toggleFlag){
-									  STM_EVAL_LEDOn(LED4);
-								} else {
-									   STM_EVAL_LEDOff(LED4);
-								}
+			if (toggleFlag) {
+				STM_EVAL_LEDOn(LED4);
+			} else {
+				STM_EVAL_LEDOff(LED4);
+			}
 
-									   toggleFlag = !toggleFlag;
-						}
+			toggleFlag = !toggleFlag;
+		}
 		/**************************************/
-
-
 
 	}
 }

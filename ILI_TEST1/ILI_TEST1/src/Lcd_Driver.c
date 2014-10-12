@@ -4,6 +4,7 @@
 #include "delay.h"
 #include "GUI.h"
 #include <string.h>
+#include "clock.h"
 
 extern bool updateDate;
 
@@ -63,7 +64,7 @@ volatile u8 mode = 0;
 uint16_t Color;
 uint16_t bkColor;
 
-
+volatile uint16_t ssTogle;
 
 //uint8_t Bk_red, Bk_green, Bk_blue;
 
@@ -1138,64 +1139,121 @@ void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 
 	uint8_t datas[9];
 
-
-
 	year = RTC_DateStruct->RTC_Year;
 	month = RTC_DateStruct->RTC_Month;
 	day = RTC_DateStruct->RTC_Date;
 	weekday = RTC_DateStruct->RTC_WeekDay;
 
-	//sprintf(yearStr,"%02d",year);
-	itoa((uint16_t)year+2000,yearStr);
-	itoa((uint16_t)month,mStr);
-	itoa((uint16_t)day,dStr);
 
+	itoa((uint16_t) year + 2000, yearStr);
+	itoa((uint16_t) month, mStr);
+	itoa((uint16_t) day, dStr);
 
-
-	setCurrentFont( &Verdana26ptFontInfo);
+	setCurrentFont(&Verdana26ptFontInfo);
 	//setCurrentFont( &DefaultFontInfo);
 
-					//tft_puts(xpos,ypos, "2014-07-08", white, black);
-					//tft_puts(xpos,ypos+40, "wtorek", white, black);
-					//tft_puts(xpos,ypos+80, "ALARM1", white, black);
+	switch (mode) {
+
+	case 0:
+	case 1:
+	case 2:
+		tft_puts(xpos, ypos, yearStr, white, black);
+		xpos = xpos + 4 * short_break;
+
+		tft_puts(xpos, ypos, "-", white, black);
+
+		xpos = xpos + short_break;
+
+		tft_puts(xpos, ypos, mStr, white, black);
+
+		xpos = xpos + 2 * short_break;
+
+		tft_puts(xpos, ypos, "-", white, black);
+
+		xpos = xpos + short_break;
+
+		tft_puts(xpos, ypos, dStr, white, black);
+
+		break;
+
+	case 3: //setting year
+
+		if (((0x000F & ssTogle++) % 2)) {
+			tft_puts(xpos, ypos, yearStr, white, black);
+
+		} else {
+			tft_puts(xpos, ypos, "    ", white, black);
+		}
+		xpos = xpos + 4 * short_break;
+
+		tft_puts(xpos, ypos, "-", white, black);
+
+		xpos = xpos + short_break;
+
+		tft_puts(xpos, ypos, mStr, white, black);
+
+		xpos = xpos + 2 * short_break;
+
+		tft_puts(xpos, ypos, "-", white, black);
+
+		xpos = xpos + short_break;
+
+		tft_puts(xpos, ypos, dStr, white, black);
+		break;
+	case 4: //setting month
+		tft_puts(xpos, ypos, yearStr, white, black);
+		xpos = xpos + 4 * short_break;
 
 
-	tft_puts(xpos,ypos, yearStr, white, black);
-	xpos = xpos+4*short_break;
 
-	tft_puts(xpos,ypos, "-", white, black);
+		tft_puts(xpos, ypos, "-", white, black);
 
-	xpos = xpos+short_break;
+		xpos = xpos + short_break;
 
-	tft_puts(xpos,ypos, mStr, white, black);
+		if (((0x000F & ssTogle++) % 2)) {
+			tft_puts(xpos, ypos, mStr, white, black);
 
-	xpos = xpos+2*short_break;
+		} else {
+			tft_puts(xpos, ypos, "  ", white, black);
+		}
 
-	tft_puts(xpos,ypos, "-", white, black);
+		xpos = xpos + 2 * short_break;
 
-	xpos = xpos+short_break;
+		tft_puts(xpos, ypos, "-", white, black);
 
-	tft_puts(xpos,ypos, dStr, white, black);
+		xpos = xpos + short_break;
 
+		tft_puts(xpos, ypos, dStr, white, black);
+		break;
+	case 5: //setting day
+		tft_puts(xpos, ypos, yearStr, white, black);
+		xpos = xpos + 4 * short_break;
 
-	/*
-	Gui_DrawFont_GBK24(xpos,ypos, BLUE, GRAY0, yearStr);
-	xpos = xpos+4*short_break;
+		tft_puts(xpos, ypos, "-", white, black);
 
-	Gui_DrawFont_GBK24(xpos,ypos, BLUE, GRAY0, "-");
+		xpos = xpos + short_break;
 
-	xpos = xpos+short_break;
+		tft_puts(xpos, ypos, mStr, white, black);
 
-	Gui_DrawFont_GBK24(xpos,ypos, BLUE, GRAY0, mStr);
+		xpos = xpos + 2 * short_break;
 
-	xpos = xpos+2*short_break;
+		tft_puts(xpos, ypos, "-", white, black);
 
-	Gui_DrawFont_GBK24(xpos,ypos, BLUE, GRAY0, "-");
+		xpos = xpos + short_break;
 
-	xpos = xpos+short_break;
+		if (((0x000F & ssTogle++) % 2)) {
+			tft_puts(xpos, ypos, dStr, white, black);
 
-	Gui_DrawFont_GBK24(xpos,ypos, BLUE, GRAY0, dStr);
-	*/
+		} else {
+			tft_puts(xpos, ypos, "  ", white, black);
+		}
+
+		break;
+	default:
+		break;
+
+	}
+
 
 
 }
@@ -1321,6 +1379,28 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 		}
 		break;
 	case 3:
+	case 4:
+	case 5:
+		if (last_hours != hh){
+					tft_puts(xpos, ypos, datah, color, bkColor);
+
+					//if((last_hours == 23) && (hh==0))
+
+
+				}
+
+				xpos = xpos + 2 * short_break;
+				tft_puts(xpos, ypos, colon, color, bkColor);
+				xpos = xpos + short_break;
+
+				if (last_minutes != mm)
+					tft_puts(xpos, ypos, datam, color, bkColor);
+
+				last_hours = hh;
+				last_minutes = mm;
+
+
+		displayDate();
 		break;
 	default:
 		break;
