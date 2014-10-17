@@ -304,7 +304,7 @@ void TIM2_IRQHandler(void) {
 	RTC_TimeTypeDef RTC_TimeStructure;
 	RTC_DateTypeDef RTC_DateStructure;
 	uint8_t sec, min, hours;
-	uint8_t year, month, day;
+	uint32_t year, month, day;
 
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
 
@@ -331,7 +331,7 @@ void TIM2_IRQHandler(void) {
 			case 1: //hours
 				hours = RTC_TimeStructure.RTC_Hours;
 				hours = bcd2dec(hours);
-				hours = (hours + 1) % 60;
+				hours = (hours + 1) % 24;
 				hours = dec2bcd(hours);
 				RTC_TimeStructure.RTC_Hours = hours;
 				break;
@@ -369,13 +369,14 @@ void TIM2_IRQHandler(void) {
 			}
 
 			if (mode > 2)
-				RTC_SetDate(RTC_Format_BIN, &RTC_DateStructure);
+					RTC_SetDate(RTC_Format_BIN, &RTC_DateStructure);
 
-			if (mode <= 2) {
+			if ((mode == 1) || (mode == 2)) {
 				RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
 				updated = true;
 			}
 
+			/*
 			if (toggleFlag) {
 				STM_EVAL_LEDOn(LED3);
 			} else {
@@ -383,6 +384,7 @@ void TIM2_IRQHandler(void) {
 			}
 
 			toggleFlag = !toggleFlag;
+			*/
 		}
 
 		if ((bstated = (bstated << 1 & 0xf)
@@ -392,14 +394,18 @@ void TIM2_IRQHandler(void) {
 			// byl zwolniony, teraz jest wcisniety - zmiana stanu LED
 			//LED_PORT->ODR ^= 1 << GREEN_LED_BIT | 1 << BLUE_LED_BIT;
 
-			RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
+			if (mode <= 2)
+							RTC_GetTime(RTC_Format_BCD, &RTC_TimeStructure);
+
+						if (mode > 2)
+							RTC_GetDate(RTC_Format_BIN, &RTC_DateStructure);
 
 			switch (mode) {
 			case 1:
 				hours = RTC_TimeStructure.RTC_Hours;
 				hours = bcd2dec(hours);
-				if (min > 0) {
-					hours = (hours - 1) % 24;
+				if (hours > 0) {
+					hours = hours - 1;
 				} else {
 					hours = 23;
 				}
@@ -411,7 +417,7 @@ void TIM2_IRQHandler(void) {
 				min = RTC_TimeStructure.RTC_Minutes;
 				min = bcd2dec(min);
 				if (min > 0) {
-					min = (min - 1) % 60;
+					min = min - 1;
 				} else {
 					min = 59;
 				}
@@ -428,16 +434,17 @@ void TIM2_IRQHandler(void) {
 				break;
 			case 4: //month
 				month = RTC_DateStructure.RTC_Month;
-				month = (month - 1) % 13;
-				if (!month)
+				month = month - 1;
+				if (month == 0)
 					month = 12;
 				RTC_DateStructure.RTC_Month = month;
 				break;
 			case 5: //day
 				day = RTC_DateStructure.RTC_Date;
-				day = (day - 1) % 32;
-				if (!day)
-					day = 31;
+
+				if (day > 2)
+					day = day - 1;
+
 				RTC_DateStructure.RTC_Date = day;
 				break;
 
@@ -446,13 +453,14 @@ void TIM2_IRQHandler(void) {
 			}
 
 			if (mode > 2)
-							RTC_SetDate(RTC_Format_BIN, &RTC_DateStructure);
+				RTC_SetDate(RTC_Format_BIN, &RTC_DateStructure);
 
-						if (mode <= 2) {
-							RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
-							updated = true;
-						}
+			if ((mode == 1) || (mode == 2)) {
+				RTC_SetTime(RTC_Format_BCD, &RTC_TimeStructure);
+				updated = true;
+			}
 
+			/*
 			if (toggleFlag) {
 				STM_EVAL_LEDOn(LED3);
 			} else {
@@ -460,6 +468,7 @@ void TIM2_IRQHandler(void) {
 			}
 
 			toggleFlag = !toggleFlag;
+			*/
 		}
 
 		/*************************************/
@@ -471,6 +480,7 @@ void TIM2_IRQHandler(void) {
 				displayDate();
 			//updated = true;
 
+			/*
 			if (toggleFlag) {
 				STM_EVAL_LEDOn(LED4);
 			} else {
@@ -478,6 +488,7 @@ void TIM2_IRQHandler(void) {
 			}
 
 			toggleFlag = !toggleFlag;
+			*/
 		}
 		/**************************************/
 

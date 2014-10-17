@@ -1129,6 +1129,35 @@ void LCD_Write_Colon(u16 xpos,u16 ypos){
 	xpos = xpos+short_break;
 }
 
+void writeWeekDay(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct){
+	switch (RTC_DateStruct->RTC_WeekDay) {
+		case 1:
+			tft_puts(xpos, ypos, "poniedziałek", white, black);
+			break;
+		case 2:
+			tft_puts(xpos, ypos, "wtorek      ", white, black);
+			break;
+		case 3:
+			tft_puts(xpos, ypos, "sroda       ", white, black);
+			break;
+		case 4:
+			tft_puts(xpos, ypos, "czwartek    ", white, black);
+			break;
+		case 5:
+			tft_puts(xpos, ypos, "piątek      ", white, black);
+			break;
+		case 6:
+			tft_puts(xpos, ypos, "sobota      ", white, black);
+			break;
+		case 7:
+			tft_puts(xpos, ypos, "niedziela   ", white, black);
+			break;
+		default:
+			tft_puts(xpos, ypos, "error       ", white, black);
+			break;
+	}
+}
+
 void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 {
 	uint8_t year, month, day, weekday;
@@ -1138,6 +1167,9 @@ void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 	uint8_t dStr[5];
 
 	uint8_t datas[9];
+	u16 xposInit;
+
+	xposInit = xpos;
 
 	year = RTC_DateStruct->RTC_Year;
 	month = RTC_DateStruct->RTC_Month;
@@ -1173,6 +1205,10 @@ void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 		xpos = xpos + short_break;
 
 		tft_puts(xpos, ypos, dStr, white, black);
+
+		ypos += 30;
+
+		writeWeekDay(xposInit, ypos,RTC_DateStruct);
 
 		break;
 
