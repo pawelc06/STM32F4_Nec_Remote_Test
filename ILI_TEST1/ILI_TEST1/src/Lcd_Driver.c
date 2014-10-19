@@ -1191,7 +1191,7 @@ void LCD_Write_Date(u16 xpos,u16 ypos,RTC_DateTypeDef  * RTC_DateStruct)
 	setCurrentFont(&Verdana26ptFontInfo);
 	//setCurrentFont( &DefaultFontInfo);
 
-	blink = ((0x000F & ssTogle++) % 2);
+	blink = ((0x000F & ssTogle) % 2);
 
 	switch (mode) {
 
@@ -1344,6 +1344,7 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 	uint32_t color = white;
 	uint32_t bkColor = black;
 	uint8_t year, month, day, weekday;
+	u16 blink;
 
 	hh = RTC_TimeStructure1->RTC_Hours;
 	mm = RTC_TimeStructure1->RTC_Minutes;
@@ -1351,7 +1352,7 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 
 
-
+	blink = ((0x000F & ssTogle) % 2);
 
 
 
@@ -1366,7 +1367,7 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 	datah[2] = 0;
 
-	if (((0x000F & ss) % 2)) {
+	if (blink) {
 		colon[0] = ':';
 	} else {
 		colon[0] = ' ';
@@ -1404,7 +1405,7 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 
 		break;
 	case 1:
-		if ((0x000F & ss) % 2) {
+		if (blink) {
 			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
 			tft_puts(xpos, ypos, "  ", color, bkColor);
 
@@ -1429,7 +1430,7 @@ void LCD_Write_TimeBCD2(u16 xpos,u16 ypos,RTC_TimeTypeDef * RTC_TimeStructure1)
 		tft_puts(xpos, ypos, colon, color, bkColor);
 
 		xpos = xpos + short_break;
-		if ((0x000F & ss) % 2) {
+		if (blink) {
 			//Gui_DrawFont_Num32(xpos,ypos,RED,GRAY0,15);
 
 			tft_puts(xpos, ypos, "  ", color, bkColor);

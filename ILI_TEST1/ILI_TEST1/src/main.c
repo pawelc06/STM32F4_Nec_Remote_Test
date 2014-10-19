@@ -223,7 +223,8 @@ int main(void) {
 	TIM_TimeBaseInitTypeDef timerInitStructure;
 	timerInitStructure.TIM_Prescaler = 100;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 3332;
+	//timerInitStructure.TIM_Period = 3332;
+	timerInitStructure.TIM_Period = 6000;
 	timerInitStructure.TIM_ClockDivision = 0;
 
 	//timerInitStructure.TIM_RepetitionCounter = 0;

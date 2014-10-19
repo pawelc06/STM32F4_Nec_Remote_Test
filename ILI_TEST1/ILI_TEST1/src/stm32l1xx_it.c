@@ -40,6 +40,7 @@
 volatile bool toggleFlag = false;
 extern bool updated;
 extern uint8_t mode; //0 - normal, 1 - hours, 2 - minutes, 3 seconds
+extern uint16_t ssTogle;
 volatile uint16_t sample;
 volatile uint8_t i;
 volatile uint8_t * wavPtr;
@@ -193,6 +194,7 @@ void RTC_WKUP_IRQHandler(void)
 		//STM_EVAL_LEDToggle(LED4);
     	updated = true;
 		//displayTime();
+    	ssTogle++;
   }
 }
 
@@ -461,7 +463,7 @@ void TIM2_IRQHandler(void) {
 
 			case 6: //day of the week
 				weekday = RTC_DateStructure.RTC_WeekDay;
-				weekday = day -1;
+				weekday = weekday -1;
 				if (!day)
 					day = 1;
 				RTC_DateStructure.RTC_WeekDay = weekday;
@@ -496,9 +498,19 @@ void TIM2_IRQHandler(void) {
 				| (MODE_BUTTON_GPIO_PORT->IDR >> BUTTON_MODE & 1)) == 1) {
 
 			mode = (mode + 1) % 7;
-			if (!mode)
+
+			if ((mode == 0) || (mode ==6))
 				displayDate();
-			//updated = true;
+
+
+			/*
+			if((mode == 3)){
+				ssTogle = 1;
+				//updated = true;
+				displayTime();
+			}
+			*/
+
 
 			/*
 			 if (toggleFlag) {
