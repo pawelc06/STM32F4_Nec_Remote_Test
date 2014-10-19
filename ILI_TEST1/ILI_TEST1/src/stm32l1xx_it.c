@@ -304,7 +304,7 @@ void TIM2_IRQHandler(void) {
 	RTC_TimeTypeDef RTC_TimeStructure;
 	RTC_DateTypeDef RTC_DateStructure;
 	uint8_t sec, min, hours;
-	uint32_t year, month, day;
+	uint32_t year, month, day,weekday;
 
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
 
@@ -313,6 +313,9 @@ void TIM2_IRQHandler(void) {
 		static uint8_t bstateu = 0; //ostatnie stany przycisku
 		static uint8_t bstated = 0; //ostatnie stany przycisku
 		static uint8_t bstatem = 0; //ostatnie stany przycisku
+
+
+
 
 		if ((bstateu = (bstateu << 1 & 0xf)
 				| (UP_BUTTON_GPIO_PORT->IDR >> BUTTON_UP & 1)) == 1) {
@@ -363,6 +366,13 @@ void TIM2_IRQHandler(void) {
 					day = 1;
 				RTC_DateStructure.RTC_Date = day;
 				break;
+			case 6: //day of the week
+				weekday = RTC_DateStructure.RTC_WeekDay;
+				weekday = (weekday + 1) % 8;
+				if (!weekday)
+					weekday = 1;
+				RTC_DateStructure.RTC_WeekDay = weekday;
+				break;
 
 			default:
 				break;
@@ -385,6 +395,7 @@ void TIM2_IRQHandler(void) {
 
 			toggleFlag = !toggleFlag;
 			*/
+			return;
 		}
 
 		if ((bstated = (bstated << 1 & 0xf)
@@ -448,6 +459,14 @@ void TIM2_IRQHandler(void) {
 				RTC_DateStructure.RTC_Date = day;
 				break;
 
+			case 6: //day of the week
+				weekday = RTC_DateStructure.RTC_WeekDay;
+				weekday = day -1;
+				if (!day)
+					day = 1;
+				RTC_DateStructure.RTC_WeekDay = weekday;
+				break;
+
 			default:
 				break;
 			}
@@ -469,26 +488,28 @@ void TIM2_IRQHandler(void) {
 
 			toggleFlag = !toggleFlag;
 			*/
+			return;
 		}
 
 		/*************************************/
 		if ((bstatem = (bstatem << 1 & 0xf)
 				| (MODE_BUTTON_GPIO_PORT->IDR >> BUTTON_MODE & 1)) == 1) {
 
-			mode = (mode + 1) % 6;
+			mode = (mode + 1) % 7;
 			if (!mode)
 				displayDate();
 			//updated = true;
 
 			/*
-			if (toggleFlag) {
-				STM_EVAL_LEDOn(LED4);
-			} else {
-				STM_EVAL_LEDOff(LED4);
-			}
+			 if (toggleFlag) {
+			 STM_EVAL_LEDOn(LED4);
+			 } else {
+			 STM_EVAL_LEDOff(LED4);
+			 }
 
-			toggleFlag = !toggleFlag;
-			*/
+			 toggleFlag = !toggleFlag;
+			 */
+			return;
 		}
 		/**************************************/
 
