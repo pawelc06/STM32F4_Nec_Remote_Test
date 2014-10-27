@@ -25,7 +25,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>STM32F0xx_StdPeriph_Driver</name>
+			<name>STM32L1xx_StdPeriph_Driver</name>
 			<type>2</type>
 			<location>D:/arm_projects/STM32L1xx_StdPeriph_Lib_V1.2.0/Libraries/STM32L1xx_StdPeriph_Driver/src</location>
 		</link>

@@ -132,6 +132,24 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(SD_SPI_MOSI_GPIO_PORT, SD_SPI_MOSI_SOURCE, SD_SPI_MOSI_AF);
  /**************************************/
 
+  /* MCO config */
+  //RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+  //GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_MCO);
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+
+  /* Output clock on MCO pin ---------------------------------------------*/
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  // pick one of the clocks to spew
+  //RCC_MCOConfig(RCC_MCOSource_SYSCLK); // Put on MCO pin the: System clock selected
+  RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_1);
+
 }
 
 void SPI_Config(void)
@@ -145,7 +163,7 @@ void SPI_Config(void)
   SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;                        //stan sygnalu taktujacego przy braku transmisji - wysoki
   SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;                      //aktywne zbocze sygnalu taktujacego - 2-gie zbocze
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;                         //programowa obsluga linii NSS (CS)
-  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;//prescaler szybkosci tansmisji  72MHz/4=18MHz
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;//prescaler szybkosci tansmisji  32MHz/2=16MHz
   SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;                //pierwszy bit w danych najbardziej znaczacy
   SPI_InitStructure.SPI_CRCPolynomial = 7;                          //stopien wielomianu do obliczania sumy CRC
   SPI_Init(SPI1, &SPI_InitStructure);                               //inicjalizacja SPI
@@ -249,14 +267,14 @@ int main(void) {
 
 	//Gui_DrawFont_GBK24_bk(20,120, BLUE, WHITE, "1234 abcd");
 
-	//playWav("rct3.wav");
+	//playWav("rct3.wav"); // fsamp 22050 Hz, 8bit
 
 
 
 	/* tests */
-	//playWav("m8m.wav");
-	//playWav("bj8.wav");
-	//playWav("im16.wav");
+	//playWav("m8m.wav"); // fsamp 44100 Hz, 8 bit
+	//playWav("bj8.wav"); // fsamp 44100 Hz, 8 bit
+	//playWav("im16.wav");  // fsamp 44100 Hz, 16 bit
 
 	//playWavFromIntMemory(rooster3);
 
@@ -337,11 +355,15 @@ static void RTC_Config32768Internal(void) {
 
 //uint8_t yr;
 
+
+
 	/* Enable the PWR clock */
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
 
 	/* SYSCFG Peripheral clock enable */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
+	PWR_DeInit();
 
 	/* Allow access to RTC */
 	PWR_RTCAccessCmd(ENABLE);

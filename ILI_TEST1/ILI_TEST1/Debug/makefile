@@ -12,7 +12,7 @@ RM := rm -rf
 -include src/TFT_TEXT/subdir.mk
 -include src/TFT_FONT/subdir.mk
 -include src/subdir.mk
--include STM32F0xx_StdPeriph_Driver/subdir.mk
+-include STM32L1xx_StdPeriph_Driver/subdir.mk
 -include FatFs_0.10/src/subdir.mk
 -include FatFs_0.10/subdir.mk
 -include subdir.mk

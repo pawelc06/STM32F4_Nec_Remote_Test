@@ -25,7 +25,9 @@ static u16 fac_ms=0;//ms延时倍乘数
 void delay_init(u8 SYSCLK)
 {
 	SysTick->CTRL&=0xfffffffb;//bit2清空,选择外部时钟  HCLK/8
-	fac_us=SYSCLK/4;
+
+	//was 4 when SYSCLK was 16 MHz
+	fac_us=SYSCLK/16;
 	fac_ms=(u16)fac_us*1000;
 }								    
 //延时nms

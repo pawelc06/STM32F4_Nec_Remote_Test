@@ -17,7 +17,7 @@ startup \
 src \
 src/TFT_TEXT \
 src/TFT_FONT \
-STM32F0xx_StdPeriph_Driver \
+STM32L1xx_StdPeriph_Driver \
 FatFs_0.10/src \
 FatFs_0.10 \
 

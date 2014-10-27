@@ -512,7 +512,7 @@ void TIM2_IRQHandler(void) {
 			*/
 
 
-			/*
+
 			 if (toggleFlag) {
 			 STM_EVAL_LEDOn(LED4);
 			 } else {
@@ -520,7 +520,7 @@ void TIM2_IRQHandler(void) {
 			 }
 
 			 toggleFlag = !toggleFlag;
-			 */
+
 			return;
 		}
 		/**************************************/
