@@ -239,11 +239,11 @@ int main(void) {
 	NVIC_Init(&nvicStructure);
 
 	TIM_TimeBaseInitTypeDef timerInitStructure;
-	timerInitStructure.TIM_Prescaler = 100;
+	timerInitStructure.TIM_Prescaler = 3200; //32 MHz/3200 = 10000
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	//timerInitStructure.TIM_Period = 3332;
-	timerInitStructure.TIM_Period = 12000;
-	timerInitStructure.TIM_ClockDivision = 0;
+	timerInitStructure.TIM_Period = 100; //10 000/100 = 100 Hz - sampling frequency of buttons
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 
 	//timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
