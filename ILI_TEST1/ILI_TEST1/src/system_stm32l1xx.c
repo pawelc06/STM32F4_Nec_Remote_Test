@@ -306,7 +306,7 @@ static void SetSysClock(void)
 
 	  /* SYSCLK, HCLK, PCLK2 and PCLK1 configuration ---------------------------*/
 	  /* Enable HSE */
-	  RCC->CR |= ((uint32_t)RCC_CR_HSEON);
+	  RCC->CR |= ((uint32_t)RCC_CR_HSEON | RCC_CR_HSEBYP);
 
 	  /* Wait till HSE is ready and if Time out is reached exit */
 	  do
@@ -358,8 +358,8 @@ static void SetSysClock(void)
 	    /*  PLL configuration */
 	    RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMUL |
 	                                        RCC_CFGR_PLLDIV));
-	    //RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLMUL12 | RCC_CFGR_PLLDIV3);
-	    RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLMUL16 | RCC_CFGR_PLLDIV2);
+	    RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLMUL12 | RCC_CFGR_PLLDIV3);
+	    //RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSE | RCC_CFGR_PLLMUL16 | RCC_CFGR_PLLDIV2);
 
 	    /* Enable PLL */
 	    RCC->CR |= RCC_CR_PLLON;
