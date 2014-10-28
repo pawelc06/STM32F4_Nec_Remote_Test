@@ -138,7 +138,7 @@ void GPIO_Config(void)
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 
   /* Output clock on MCO pin ---------------------------------------------*/
-
+/*
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -150,6 +150,7 @@ void GPIO_Config(void)
   // pick one of the clocks to spew
   //RCC_MCOConfig(RCC_MCOSource_SYSCLK); // Put on MCO pin the: System clock selected
   RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_1);
+  */
 
 
 }
