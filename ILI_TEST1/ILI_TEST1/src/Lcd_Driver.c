@@ -369,11 +369,14 @@ void Lcd_WriteIndex(u8 Index)
    //SPI Đ´ĂüÁîĘ±ĐňżŞĘĽ
    LCD_CS_CLR;
    LCD_RS_CLR;
-   for (i = 0; i < 5; i++) { /* Wait a bit. */
+
+   /*
+   for (i = 0; i < 5; i++) {
    			__asm__("NOP");
    		}
+*/
 
-   //SPIv_WriteByte(Index);
+
    SPI_WriteByte(SPI2,Index);
    
    LCD_CS_SET;
@@ -402,9 +405,7 @@ void Lcd_WriteData(u8 Data)
    //SPIv_WriteByte(Data);
    SPI_WriteByte(SPI2,Data);
 
-   /* Wait for transfer finished. */
-   		//while (!(SPI2->SR & SPI_SR_RXNE));
-   //while ((SPI2->SR & SPI_SR_TXE));
+
 
 
    LCD_CS_SET;
