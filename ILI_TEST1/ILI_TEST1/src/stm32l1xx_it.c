@@ -529,6 +529,21 @@ void TIM2_IRQHandler(void) {
 }
 
 /**
+  * @brief  This function handles RTC Alarms interrupt request.
+  * @param  None
+  * @retval None
+  */
+void RTC_Alarm_IRQHandler(void)
+{
+  if(RTC_GetITStatus(RTC_IT_ALRA) != RESET)
+  {
+    STM_EVAL_LEDToggle(LED3);
+    RTC_ClearITPendingBit(RTC_IT_ALRA);
+    EXTI_ClearITPendingBit(EXTI_Line17);
+  }
+}
+
+/**
   * @brief  This function handles PPP interrupt request.
   * @param  None
   * @retval None

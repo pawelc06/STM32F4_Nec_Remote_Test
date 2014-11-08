@@ -467,6 +467,9 @@ static void RTC_AlarmConfig(void) {
 	RTC_AlarmTypeDef RTC_AlarmStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
+	RTC_AlarmCmd(RTC_Alarm_A, DISABLE);
+	//RTC_AlarmStructure.RTC_AlarmTime.RTC_H12 ;
+
 	/* EXTI configuration */
 	EXTI_ClearITPendingBit(EXTI_Line17);
 	EXTI_InitStructure.EXTI_Line = EXTI_Line17;
@@ -483,19 +486,25 @@ static void RTC_AlarmConfig(void) {
 	NVIC_Init(&NVIC_InitStructure);
 
 	/* Set the alarm A Masks */
-	RTC_AlarmStructure.RTC_AlarmMask = RTC_AlarmMask_All;
-	RTC_AlarmStructure.RTC_AlarmDateWeekDaySel = RTC_AlarmDateWeekDaySel_Date;
-	RTC_AlarmStructure.RTC_AlarmDateWeekDay = RTC_Weekday_Monday;
-	RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours = 0x0;
-	RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = 0x0;
-	RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = 0x0;
+	RTC_AlarmStructure.RTC_AlarmMask = RTC_AlarmMask_None;
+	RTC_AlarmStructure.RTC_AlarmDateWeekDaySel = RTC_AlarmDateWeekDaySel_WeekDay;
+	//RTC_AlarmStructure.RTC_AlarmDateWeekDay = RTC_Weekday_Monday | RTC_Weekday_Tuesday | RTC_Weekday_Wednesday | RTC_Weekday_Thursday | RTC_Weekday_Friday;
+	RTC_AlarmStructure.RTC_AlarmDateWeekDay =  (RTC_Weekday_Tuesday | RTC_Weekday_Sunday);
+
+	//RTC_AlarmStructure.RTC_AlarmDateWeekDay = RTC_Weekday_Wednesday;
+	RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours = 0x00;
+	RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = 0x01;
+	RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = 0x00;
 	RTC_SetAlarm(RTC_Format_BCD, RTC_Alarm_A, &RTC_AlarmStructure);
 
 	/* Set alarm A sub seconds and enable SubSec Alarm : generate 8 interrupts per Second */
-	RTC_AlarmSubSecondConfig(RTC_Alarm_A, 0xFF, RTC_AlarmSubSecondMask_SS14_5);
+	//RTC_AlarmSubSecondConfig(RTC_Alarm_A, 0xFF, RTC_AlarmSubSecondMask_SS14_5);
 
-	/* Enable alarm A interrupt */
-	RTC_ITConfig(RTC_IT_ALRA, ENABLE);
+	/* Enable the RTC Alarm A Interrupt */
+	  RTC_ITConfig(RTC_IT_ALRA, ENABLE);
+
+	  /* Enable the alarm  A */
+	  RTC_AlarmCmd(RTC_Alarm_A, ENABLE);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
