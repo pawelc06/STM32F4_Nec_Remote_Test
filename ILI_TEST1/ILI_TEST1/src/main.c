@@ -279,7 +279,7 @@ int main(void) {
 	//playWav("bj8.wav"); // fsamp 44100 Hz, 8 bit
 	//playWav("im16.wav");  // fsamp 44100 Hz, 16 bit
 
-	//playWavFromIntMemory(rooster3);
+	playWavFromIntMemory(rooster3);
 
 
 	displayDate();
