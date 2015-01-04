@@ -155,7 +155,7 @@ int main(void) {
 	SystemInit();
 	init_usart(115200);
 	init_GPIO();
-	//init_timer();
+
 	NEC_Init();
 	//STM_EVAL_LEDInit(LED4);
 	//STM_EVAL_LEDInit(LED5);
